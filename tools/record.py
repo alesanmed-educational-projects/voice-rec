@@ -10,7 +10,7 @@ c_error_handler = ERROR_HANDLER_FUNC(py_error_handler)
 
 @contextmanager
 def noalsaerr():
-    asound = cdll.LoadLibrary('libasound.so')
+    asound = cdll.LoadLibrary('libasound.so.2')
     asound.snd_lib_error_set_handler(c_error_handler)
     yield
     asound.snd_lib_error_set_handler(None)
@@ -21,10 +21,10 @@ import os
 import pyaudio
 import pygame
 import time
-import transcript
+import tools.transcript as transcript
 import wave
  
-def record():
+def run():
     FILEPATH = 'products.json'
     FORMAT = pyaudio.paInt16
     RATE = 44100
@@ -84,7 +84,6 @@ def record():
                 pass
             frames.append(data)
         print("finished recording")
-        print("Chunk: {0}".format(CHUNK)) 
          
         # stop Recording
         stream.stop_stream()
@@ -112,4 +111,4 @@ def record():
             json.dump({'products': products }, outfile)
             
 if __name__ == "__main__":
-    record()
+    run()

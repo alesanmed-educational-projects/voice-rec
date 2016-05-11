@@ -12,18 +12,18 @@ def runInParallel(q, *fns):
         p = Process(target=fn, args=(q,))
         p.start()
         proc.append(p)
-    for p in proc:
-        p.join()
     
+    print("Return proc")
     return proc
 
-def run_barcode():
+def run_barcode(q):
     barcode.run()
 
 def run_voice(q):
     result = record.run()
     if result == -1:
         q.put(-1)
+        print("Saliendo")
 
 if __name__ == '__main__':
     BARCODE_FILEPATH = 'barcodes.json'
@@ -37,21 +37,21 @@ if __name__ == '__main__':
             os.remove(PRODUCT_FILEPATH)
         
         q = Queue()
-        proc = runInParallel(q, run_barcode, run_voice)
-        first = False
+        proc = runInParallel(q, run_voice, run_barcode)
         
+        print("While")
         while q.get() != -1:
+            print("Mi q es {0}".format(q.get()))
             pass
         
         for p in proc:
             p.terminate()
-            p.join()
         
         with open(BARCODE_FILEPATH, 'r') as barcodes:
             with open(PRODUCT_FILEPATH, 'r') as products:
                 result = {
-                    'products': products['products'],
-                    'barcodes': barcodes['barcodes']
+                    'products': json.load(products)['products'],
+                    'barcodes': json.load(barcodes)['barcodes']
                 }
                 
                 with open('shopping_carts/cart-{0}.json'.format(

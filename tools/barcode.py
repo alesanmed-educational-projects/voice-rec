@@ -17,6 +17,11 @@ def run():
 		barcode = input()
 		if barcode:
 			barcodes.append(barcode)
+			print(barcode)
 
 		with open(filepath, 'w') as outfile:
 			json.dump({'barcodes': barcodes }, outfile)
+
+
+if __name__ == "__main__":
+	run()
