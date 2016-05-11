@@ -5,15 +5,16 @@ import time
 import wave
  
 def record():
-    INDEX = 0
+    INDEX = 2
     FORMAT = pyaudio.paInt16
     RATE = 44100
-    CHUNK = 1024
+    CHUNK = 8192
     RECORD_SECONDS = 5
     WAVE_OUTPUT_FILENAME = "product.wav"
      
     audio = pyaudio.PyAudio()
     
+    print(audio.get_device_info_by_index(INDEX))
     CHANNELS = audio.get_device_info_by_index(INDEX)['maxInputChannels']
     
     GPIO.setmode(GPIO.BCM)
@@ -44,12 +45,16 @@ def record():
     for i in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
         if GPIO.event_detected(24):
             if time.time() - t < 1:
+                print("Parando")
                 return -1
             break
-        data = stream.read(CHUNK)
+        try:
+            data = stream.read(CHUNK)
+        except:
+            pass
         frames.append(data)
     print("finished recording")
-     
+    print("Chunk: {0}".format(CHUNK)) 
      
     # stop Recording
     stream.stop_stream()
@@ -62,3 +67,6 @@ def record():
     waveFile.setframerate(RATE)
     waveFile.writeframes(b''.join(frames))
     waveFile.close()
+
+if __name__ == "__main__":
+    record()
