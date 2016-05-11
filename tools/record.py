@@ -9,7 +9,6 @@ import wave
  
 def record():
     FILEPATH = 'products.json'
-    INDEX = 2
     FORMAT = pyaudio.paInt16
     RATE = 44100
     CHUNK = 8192
@@ -26,10 +25,17 @@ def record():
     pygame.mixer.init()
     pygame.mixer.music.load('alert.wav')   
     while True:
-        print("Listo")
         audio = pyaudio.PyAudio()
-    
-        CHANNELS = audio.get_device_info_by_index(INDEX)['maxInputChannels']
+        for i in range(audio.get_device_count()):
+            device = audio.get_device_info_by_index(i)
+
+            if "microsoft" in device['name'].lower():
+                INDEX = i
+                CHANNELS = device['maxInputChannels']
+                print(INDEX)
+                break
+
+        print("Listo")
         while not GPIO.event_detected(23):
             pass
         
