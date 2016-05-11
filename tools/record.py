@@ -29,15 +29,15 @@ def record():
     while not GPIO.event_detected(23):
         pass
     
+    pygame.mixer.music.play() 
+    while pygame.mixer.music.get_busy() == True:
+            continue
+        
     # start Recording
     stream = audio.open(format=FORMAT, channels=CHANNELS,
                     rate=RATE, input=True,
                     frames_per_buffer=CHUNK)
-    
-    pygame.mixer.music.play() 
-    while pygame.mixer.music.get_busy() == True:
-            continue
-    
+
     t = time.time()
     print("Comienza a hablar")
     frames = []
