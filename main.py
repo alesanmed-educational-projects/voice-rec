@@ -27,9 +27,8 @@ while True:
 
 
     with sd.InputStream(channels=channels) as in_stream:
-        print("Uno")
         sd.sleep(1000)
-        print("dos")
+        print("Comienza a hablar")
         t = time.time()
         while time.time() - t <= duration and not GPIO.event_detected(24):
             myrecording = np.append(myrecording, in_stream.read(384)[0], axis=0)
