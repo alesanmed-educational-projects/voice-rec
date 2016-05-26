@@ -31,7 +31,8 @@ while True:
 
 
     with sd.InputStream(channels=channels) as in_stream:
-        sd.sleep(1000)
+        while in_stream.read_available < 384:
+                pass
         print("Comienza a hablar")
         pygame.mixer.music.play()
         while pygame.mixer.music.get_busy() == True:
