@@ -2,6 +2,7 @@ import time
 import numpy as np
 import sounddevice as sd
 import tools.transcript as transcript
+import pygame
 
 from scipy.io.wavfile import write
 
@@ -18,6 +19,9 @@ GPIO.setup(24, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.add_event_detect(23, GPIO.FALLING)
 GPIO.add_event_detect(24, GPIO.RISING)
 
+pygame.mixer.init()
+pygame.mixer.music.load('alert.wav')
+
 while True:
     myrecording = np.zeros((0, channels))
     
@@ -29,9 +33,15 @@ while True:
     with sd.InputStream(channels=channels) as in_stream:
         sd.sleep(1000)
         print("Comienza a hablar")
+        pygame.mixer.music.play()
+        while pygame.mixer.music.get_busy() == True:
+            continue
+
         t = time.time()
         while time.time() - t <= duration and not GPIO.event_detected(24):
             myrecording = np.append(myrecording, in_stream.read(384)[0], axis=0)
         
+        in_stream.stop()
+
     write('product.wav', fs, myrecording)
     print(transcript.run())
