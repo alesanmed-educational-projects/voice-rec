@@ -30,19 +30,21 @@ while True:
         pass
 
 
-    with sd.InputStream(channels=channels) as in_stream:
-        while in_stream.read_available < 384:
-                pass
-        print("Comienza a hablar")
-        pygame.mixer.music.play()
-        while pygame.mixer.music.get_busy() == True:
-            continue
+    in_stream = sd.InputStream(channels=channels)
+    while in_stream.read_available < 384:
+            pass
+    print("Comienza a hablar")
+    pygame.mixer.music.play()
+    
+    while pygame.mixer.music.get_busy() == True:
+        continue
 
-        t = time.time()
-        while time.time() - t <= duration and not GPIO.event_detected(24):
-            myrecording = np.append(myrecording, in_stream.read(384)[0], axis=0)
-        
-        in_stream.stop()
+    t = time.time()
+    while time.time() - t <= duration and not GPIO.event_detected(24):
+        myrecording = np.append(myrecording, in_stream.read(384)[0], axis=0)
+    
+    print("Traduciendo")
+    in_stream.stop()
 
     write('product.wav', fs, myrecording)
     print(transcript.run())
