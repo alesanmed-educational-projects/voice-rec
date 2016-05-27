@@ -30,7 +30,7 @@ while True:
         pass
 
     in_stream = sd.InputStream(channels=channels)
-    sd.wait(1000)
+    sd.sleep(1000)
     print("Comienza a hablar")
     pygame.mixer.music.play()
     
