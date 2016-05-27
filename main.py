@@ -29,10 +29,8 @@ while True:
     while not GPIO.event_detected(23):
         pass
 
-
     in_stream = sd.InputStream(channels=channels)
-    while in_stream.read_available < 384:
-            pass
+    sd.wait(1000)
     print("Comienza a hablar")
     pygame.mixer.music.play()
     
