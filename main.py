@@ -1,5 +1,7 @@
+import datetime
 from multiprocessing import Process, Queue
 import os
+import json
 import tools.barcode as barcode
 import tools.record as record
 
@@ -41,7 +43,19 @@ if __name__ == '__main__':
         while q.get() != -1:
             pass
         
-        # Proceso de mandar cosas
-        
         for p in proc:
             p.terminate()
+            p.join()
+        
+        with open(BARCODE_FILEPATH, 'r') as barcodes:
+            with open(PRODUCT_FILEPATH, 'r') as products:
+                result = {
+                    'products': products['products'],
+                    'barcodes': barcodes['barcodes']
+                }
+                
+                with open('shopping_carts/cart-{0}.json'.format(
+                    datetime.datetime.strftime(datetime.datetime.now(), 
+                                               '%Y-%m-%d-%H.%M.%S'))) as file:
+                    json.dump(result, file)
+        
