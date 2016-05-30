@@ -24,17 +24,17 @@ def record():
     
     pygame.mixer.init()
     pygame.mixer.music.load('alert.wav')   
+    
+    audio = pyaudio.PyAudio()
+    for i in range(audio.get_device_count()):
+        device = audio.get_device_info_by_index(i)
+
+        if "microsoft" in device['name'].lower():
+            INDEX = i
+            CHANNELS = device['maxInputChannels']
+            print(INDEX)
+            break
     while True:
-        audio = pyaudio.PyAudio()
-        for i in range(audio.get_device_count()):
-            device = audio.get_device_info_by_index(i)
-
-            if "microsoft" in device['name'].lower():
-                INDEX = i
-                CHANNELS = device['maxInputChannels']
-                print(INDEX)
-                break
-
         print("Listo")
         while not GPIO.event_detected(23):
             pass
@@ -56,6 +56,7 @@ def record():
             if GPIO.event_detected(24):
                 if time.time() - t < 1:
                     print("Parando")
+                    audio.terminate()
                     return -1
                 break
             try:
@@ -69,7 +70,6 @@ def record():
         # stop Recording
         stream.stop_stream()
         stream.close()
-        audio.terminate()
          
         waveFile = wave.open(WAVE_OUTPUT_FILENAME, 'wb')
         waveFile.setnchannels(CHANNELS)
