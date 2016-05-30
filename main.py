@@ -56,6 +56,6 @@ if __name__ == '__main__':
                 
                 with open('shopping_carts/cart-{0}.json'.format(
                     datetime.datetime.strftime(datetime.datetime.now(), 
-                                               '%Y-%m-%d-%H.%M.%S'))) as file:
+                                               '%Y-%m-%d-%H.%M.%S')), 'w') as file:
                     json.dump(result, file)
         

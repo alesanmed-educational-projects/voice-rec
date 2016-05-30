@@ -18,5 +18,5 @@ def run():
 		if barcode:
 			barcodes.append(barcode)
 
-		with open('barcodes.json', 'w') as outfile:
+		with open(filepath, 'w') as outfile:
 			json.dump({'barcodes': barcodes }, outfile)
