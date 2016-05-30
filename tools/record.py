@@ -16,9 +16,6 @@ def record():
     RECORD_SECONDS = 5
     WAVE_OUTPUT_FILENAME = "product.wav"
      
-    audio = pyaudio.PyAudio()
-    
-    CHANNELS = audio.get_device_info_by_index(INDEX)['maxInputChannels']
     
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_UP)
@@ -27,10 +24,12 @@ def record():
     GPIO.add_event_detect(24, GPIO.RISING)
     
     pygame.mixer.init()
-    pygame.mixer.music.load('alert.wav')
-    print("Listo")
-    
+    pygame.mixer.music.load('alert.wav')   
     while True:
+        print("Listo")
+        audio = pyaudio.PyAudio()
+    
+        CHANNELS = audio.get_device_info_by_index(INDEX)['maxInputChannels']
         while not GPIO.event_detected(23):
             pass
         
