@@ -1,4 +1,5 @@
 from multiprocessing import Process, Queue
+import os
 import tools.barcode as barcode
 import tools.record as record
 
@@ -23,11 +24,24 @@ def run_voice(q):
         q.put(-1)
 
 if __name__ == '__main__':
-    first = True
+    BARCODE_FILEPATH = 'barcodes.json'
+    PRODUCT_FILEPATH = 'products.json'
+    
     while True:
-        if first:
-            q = Queue() 
-            proc = runInParallel(q, run_barcode, run_voice)
-            first = False
+        if os.path.exists(BARCODE_FILEPATH):
+            os.remove(BARCODE_FILEPATH)
         
-        print(q.get())
+        if os.path.exists(PRODUCT_FILEPATH):
+            os.remove(PRODUCT_FILEPATH)
+        
+        q = Queue()
+        proc = runInParallel(q, run_barcode, run_voice)
+        first = False
+        
+        while q.get() != -1:
+            pass
+        
+        # Proceso de mandar cosas
+        
+        for p in proc:
+            p.terminate()
