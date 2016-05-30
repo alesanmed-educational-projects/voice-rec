@@ -1,5 +1,6 @@
 from multiprocessing import Process
 import tools.barcode as barcode
+import tools.record as record
 
 def runInParallel(*fns):
 	proc = []
@@ -14,7 +15,7 @@ def run_barcode():
 	barcode.run()
 
 def run_voice():
-	pass
+	record.run()
 
 if __name__ == '__main__':
 	runInParallel(run_barcode, run_voice)
