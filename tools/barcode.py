@@ -2,6 +2,7 @@ import json
 import os.path
 import os
 import sys
+import re
 
 def run():
     sys.stdin = open(0)
@@ -16,11 +17,12 @@ def run():
 
         barcode = input()
         if barcode:
-              if barcode in barcodes.keys():
-                  quantity = barcodes[barcode]
-                  barcodes[barcode] = quantity + 1
-              else:
-                  barcodes[barcode] = 1
+            barcode = re.sub("[^0-9]", "", barcode)
+            if barcode in barcodes.keys():
+                quantity = barcodes[barcode]
+                barcodes[barcode] = quantity + 1
+            else:
+                barcodes[barcode] = 1
 
         with open(filepath, 'w') as outfile:
             json.dump({'barcodes': barcodes }, outfile)
