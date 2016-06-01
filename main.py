@@ -47,15 +47,18 @@ if __name__ == '__main__':
         for p in proc:
             p.terminate()
         
-        with open(BARCODE_FILEPATH, 'r') as barcodes:
+        result = {}
+        
+        if os.path.exists(BARCODE_FILEPATH):
+            with open(BARCODE_FILEPATH, 'r') as barcodes:
+                result['barcodes'] = json.load(barcodes)['barcodes']
+        
+        if os.path.exists(PRODUCT_FILEPATH):
             with open(PRODUCT_FILEPATH, 'r') as products:
-                result = {
-                    'products': json.load(products)['products'],
-                    'barcodes': json.load(barcodes)['barcodes']
-                }
-                
-                with open('shopping_carts/cart-{0}.json'.format(
-                    datetime.datetime.strftime(datetime.datetime.now(), 
-                                               '%Y-%m-%d-%H.%M.%S')), 'w') as file:
-                    json.dump(result, file)
+                result['products'] = json.load(products)['products']
+
+        with open('shopping_carts/cart-{0}.json'.format(
+            datetime.datetime.strftime(datetime.datetime.now(), 
+                                       '%Y-%m-%d-%H.%M.%S')), 'w') as file:
+            json.dump(result, file)
         
