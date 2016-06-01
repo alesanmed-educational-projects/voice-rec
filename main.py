@@ -67,10 +67,11 @@ if __name__ == '__main__':
             with open(PRODUCT_FILEPATH, 'r') as products:
                 result['products'] = json.load(products)['products']
 
-        with open('shopping_carts/cart-{0}.json'.format(
-            datetime.datetime.strftime(datetime.datetime.now(), 
-                                       '%Y-%m-%d-%H.%M.%S')), 'w') as file:
+        timestamp = datetime.datetime.strftime(datetime.datetime.now(), 
+                                       '%Y-%m-%d-%H.%M.%S')
+        with open('shopping_carts/cart-{0}.json'.format(timestamp), 'w') as file:
             json.dump(result, file)
-            
+        
+        with open('shopping_carts/cart-{0}.json'.format(timestamp), 'rb') as file:
             for line in file.readlines():
-                bluetooth.write(bytes(line))       
+                bluetooth.write(line)
