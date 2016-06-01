@@ -101,7 +101,7 @@ def run():
         product = product.split()
         
         product_index = product.index('product')
-        quantity_index = product.index('quantity')
+        quantity_index = product.index('amount')
         
         if product_index < quantity_index:
             product_name = product[product_index + 1:quantity_index]
