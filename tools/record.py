@@ -119,10 +119,10 @@ def run():
             if product_index < quantity_index:
                 product_name =" ".join(product[product_index + 1:quantity_index])
                 if quantity_present:
-                    quantity = text2int.run(product[quantity_index + 1])
+                    quantity = text2int.run(product[quantity_index + 1:])
             else:
                 product_name = product[product_index + 1:]
-                quantity = text2int.run(product[quantity_index + 1])
+                quantity = text2int.run(product[quantity_index + 1:product_index])
             
             print(product_name)
             print(quantity)
