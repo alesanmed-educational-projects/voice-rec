@@ -4,6 +4,7 @@ import os
 import json
 import tools.barcode as barcode
 import tools.record as record
+import serial
 
 def runInParallel(q, *fns):
     
@@ -28,6 +29,15 @@ def run_voice(q):
 if __name__ == '__main__':
     BARCODE_FILEPATH = 'barcodes.json'
     PRODUCT_FILEPATH = 'products.json'
+    
+    bluetooth = serial.Serial(
+        port='/dev/ttyAMA0',
+        baudrate=9600,
+        parity=serial.PARITY_NONE,
+        stopbits=serial.STOPBITS_ONE,
+        bytesize=serial.EIGHTBITS,
+        timeout=1
+    )
     
     while True:
         if os.path.exists(BARCODE_FILEPATH):
@@ -61,4 +71,6 @@ if __name__ == '__main__':
             datetime.datetime.strftime(datetime.datetime.now(), 
                                        '%Y-%m-%d-%H.%M.%S')), 'w') as file:
             json.dump(result, file)
-        
+            
+            for line in file.readlines():
+                bluetooth.write(bytes(line))       
