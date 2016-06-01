@@ -97,12 +97,27 @@ def run():
         waveFile.close()
         
         product = transcript.run()
-    
+        
+        product = product.split()
+        
+        product_index = product.index('product')
+        quantity_index = product.index('quantity')
+        
+        if product_index < quantity_index:
+            product_name = product[product_index + 1:quantity_index]
+            quantity = product[quantity_index + 1]
+        else:
+            product_name = product[product_index + 1:]
+            quantity = product[quantity_index + 1]            
+        
+        print(product_name)
+        print(quantity)
+        
         if os.path.exists(FILEPATH):
             with open(FILEPATH, 'r') as outfile:
                 products = json.load(outfile)['products']
         else:
-            products = []
+            products = {}
             
         if product is not None:
             products.append(product)
