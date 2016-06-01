@@ -48,7 +48,7 @@ def run():
     for i in range(audio.get_device_count()):
         device = audio.get_device_info_by_index(i)
 
-        if "microsoft" in device['name'].lower():
+        if "USB" in device['name'].lower():
             INDEX = i
             CHANNELS = device['maxInputChannels']
             print(INDEX)
