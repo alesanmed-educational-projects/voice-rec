@@ -106,6 +106,7 @@ def run():
             try:
                 product_index = product.index('product')
             except:
+                print("Entrada invalida, pruebe de nuevo")
                 return
             
             quantity_present = True
