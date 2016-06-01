@@ -16,7 +16,7 @@ def run():
 
         barcode = input()
         if barcode:
-              if barcode in barcodes.keys:
+              if barcode in barcodes.keys():
                   quantity = barcodes[barcode]
                   barcodes[barcode] = quantity + 1
               else:
