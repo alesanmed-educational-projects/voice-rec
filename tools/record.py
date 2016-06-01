@@ -28,7 +28,7 @@ def run():
     FILEPATH = 'products.json'
     FORMAT = pyaudio.paInt16
     RATE = 44100
-    CHUNK = 8192
+    CHUNK = 9216
     RECORD_SECONDS = 5
     WAVE_OUTPUT_FILENAME = "product.wav"
      
