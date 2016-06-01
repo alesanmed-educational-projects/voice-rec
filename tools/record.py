@@ -47,6 +47,7 @@ def run():
 
     for i in range(audio.get_device_count()):
         device = audio.get_device_info_by_index(i)
+        print(device)
 
         if "USB" in device['name'].lower():
             INDEX = i
