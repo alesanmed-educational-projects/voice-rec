@@ -24,6 +24,7 @@ import time
 import tools.transcript as transcript
 import wave
 import tools.text2int as text2int
+import sys
  
 def run():
     FILEPATH = 'products.json'
@@ -102,12 +103,23 @@ def run():
         if product is not None:
             product = product.split()
             
-            product_index = product.index('product')
-            quantity_index = product.index('amount')
+            try:
+                product_index = product.index('product')
+            except:
+                return
+            
+            quantity_present = True
+            try:
+                quantity_index = product.index('amount')
+            except:
+                quantity = 1
+                quantity_index = sys.maxsize
+                quantity_present = False
             
             if product_index < quantity_index:
                 product_name =" ".join(product[product_index + 1:quantity_index])
-                quantity = product[quantity_index + 1]
+                if quantity_present:
+                    quantity = text2int.run(product[quantity_index + 1])
             else:
                 product_name = product[product_index + 1:]
                 quantity = text2int.run(product[quantity_index + 1])
