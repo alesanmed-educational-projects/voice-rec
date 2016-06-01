@@ -72,9 +72,9 @@ if __name__ == '__main__':
         with open('shopping_carts/cart-{0}.json'.format(timestamp), 'w') as file:
             json.dump(result, file)
         
-        bluetooth.write(b"PRODUCTS")
+        bluetooth.write(b"PRODUCTS\n")
         
         with open('shopping_carts/cart-{0}.json'.format(timestamp), 'rb') as file:
             for line in file.readlines():
                 print(line)
-                bluetooth.write(line)
+                bluetooth.write(line + b'\n')
