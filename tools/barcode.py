@@ -16,6 +16,7 @@ def run():
             barcodes = {}
 
         barcode = input()
+        print("Barcode: {0}".format(barcode))
         if barcode:
             barcode = re.sub("[^0-9]", "", barcode)
             if barcode in barcodes.keys():
