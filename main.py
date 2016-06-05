@@ -76,14 +76,18 @@ if __name__ == '__main__':
         proc = runInParallel(q, run_voice, run_barcode)
         
         print("While")
-        while not (type(q.get()) == list) and not q.get():
-            pass
-
+        while True:
+            data = q.get()
+            if type(data) == list and data[0] == -1:
+                break
+        
+        """
         q_list = q.get()
         print(q[0])
 
         if q[0] != -1:
             continue
+        """
         
         for p in proc:
             p.terminate()
