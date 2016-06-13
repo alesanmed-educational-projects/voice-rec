@@ -1,26 +1,17 @@
 import time
 import serial
 
-def run(q):
-	ser = serial.Serial(
-		port='/dev/ttyAMA0',
-		baudrate=9600,
-		parity=serial.PARITY_NONE,
-		stopbits=serial.STOPBITS_ONE,
-		bytesize=serial.EIGHTBITS,
-		timeout=1
-	      )
-
+def run(q, bluetooth):
 	command_start = '['
 	command_end = ']'
 
 	command_pending = 0;
 	command = "";
-	ser.flushInput();
+	bluetooth.flushInput();
 	while 1:
-		bytesToRead = ser.inWaiting()
+		bytesToRead = bluetooth.inWaiting()
 		if bytesToRead > 0:
-			char = ser.read(1).decode('utf-8')
+			char = bluetooth.read(1).decode('utf-8')
 			if command_pending == 0 and char == '[':
 				command_pending == 1
 			elif command_pending == 0 and char != '[':

@@ -7,31 +7,31 @@ import tools.record as record
 import tools.bluetooth as bluetooth_read
 import serial
 
-def runInParallel(q, *fns):
+def runInParallel(q, bluetooth, *fns):
     
     proc = []
     for fn in fns:
-        p = Process(target=fn, args=(q,))
+        p = Process(target=fn, args=(q, bluetooth))
         p.start()
         proc.append(p)
     
     print("Return proc")
     return proc
 
-def run_barcode(q):
+def run_barcode(q, bluetooth):
     barcode.run()
 
-def run_voice(q):
+def run_voice(q, bluetooth):
     result = record.run()
     if result == -1:
         q.put([-1])
         print("Saliendo")
 
-def run_serial(q):
-    bluetooth_read.run(q)
+def run_serial(q, bluetooth):
+    bluetooth_read.run(q, bluetooth)
 
 
-def send_last_cart(BARCODE_FILEPATH, PRODUCT_FILEPATH):
+def send_last_cart(BARCODE_FILEPATH, PRODUCT_FILEPATH, bluetooth):
     result = {}
         
     if os.path.exists(BARCODE_FILEPATH):
@@ -73,7 +73,7 @@ if __name__ == '__main__':
             os.remove(PRODUCT_FILEPATH)
         
         q = Queue(1)
-        proc = runInParallel(q, run_voice, run_barcode)
+        proc = runInParallel(q, bluetooth, run_voice, run_barcode, run_serial)
         
         data = q.get()
         
@@ -84,4 +84,4 @@ if __name__ == '__main__':
         for p in proc:
             p.terminate()
 
-        send_last_cart(BARCODE_FILEPATH, PRODUCT_FILEPATH);
+        send_last_cart(BARCODE_FILEPATH, PRODUCT_FILEPATH, bluetooth);
