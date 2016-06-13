@@ -11,17 +11,23 @@ ser = serial.Serial(
 	timeout=1
       )
 
-string = "";
+command_start = '['
+command_end = ']'
+
+command_pending = 0;
+command = "";
 ser.flushInput();
 while 1:
 	bytesToRead = ser.inWaiting()
 	if bytesToRead > 0:
-		print("Bytes: " + str(bytesToRead))
 		char = ser.read(1).decode('utf-8')
-		string += char
-		if char == ']':
-			print(string);
-			string = "";
-			print("\n");
-	else:
-		print("None", end="\r")
+		if command_pending == 0 and char == '[':
+			command_pending == 1
+		elif command_pending == 0 and char != '[':
+			continue
+		elif command_pending == 1 and char == ']':
+			print(command)
+			command = ""
+			command_pending = 0
+		elif command_pending == 1 and char != ']':
+			command += char
