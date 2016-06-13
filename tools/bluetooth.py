@@ -26,7 +26,7 @@ def run(q):
 			elif command_pending == 0 and char != '[':
 				continue
 			elif command_pending == 1 and char == ']':
-				print(command)
+				q.put(command)
 				command = ""
 				command_pending = 0
 			elif command_pending == 1 and char != ']':

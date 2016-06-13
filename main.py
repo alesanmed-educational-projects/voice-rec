@@ -72,22 +72,14 @@ if __name__ == '__main__':
         if os.path.exists(PRODUCT_FILEPATH):
             os.remove(PRODUCT_FILEPATH)
         
-        q = Queue()
+        q = Queue(1)
         proc = runInParallel(q, run_voice, run_barcode)
         
-        print("While")
-        while True:
-            data = q.get()
-            if type(data) == list and data[0] == -1:
-                break
+        data = q.get()
         
-        """
-        q_list = q.get()
-        print(q[0])
-
-        if q[0] != -1:
+        print(data)
+        if data != -1:
             continue
-        """
         
         for p in proc:
             p.terminate()
