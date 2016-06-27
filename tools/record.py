@@ -32,6 +32,8 @@ def run():
     RATE = 44100
     CHUNK = 9216
     RECORD_SECONDS = 5
+    CHANNELS = None
+    INDEX = None
     WAVE_OUTPUT_FILENAME = "product.wav"
      
     
@@ -53,10 +55,14 @@ def run():
         if "usb" in device['name'].lower():
             INDEX = i
             CHANNELS = device['maxInputChannels']
+            RATE = int(device['defaultSampleRate'])
             print("Device: {0}".format(INDEX))
             break
+
+    
+    print("Voice Recognition System [OK]")
     while True:
-        print("Listo")
+        print("Voice Recognition System Ready")
         while not GPIO.event_detected(23):
             pass
         
@@ -66,6 +72,7 @@ def run():
             
         # start Recording
         stream = audio.open(format=FORMAT, channels=CHANNELS,
+                        input_device_index=INDEX,
                         rate=RATE, input=True,
                         frames_per_buffer=CHUNK)
     

@@ -14,8 +14,7 @@ def runInParallel(q, bluetooth, *fns):
         p = Process(target=fn, args=(q, bluetooth))
         p.start()
         proc.append(p)
-    
-    print("Return proc")
+
     return proc
 
 def run_barcode(q, bluetooth):
@@ -24,11 +23,10 @@ def run_barcode(q, bluetooth):
 def run_voice(q, bluetooth):
     result = record.run()
     if result == -1:
-        q.put([-1])
-        print("Saliendo")
+        q.put(-1)
 
 def run_serial(q, bluetooth):
-    bluetooth_read.run(q, bluetooth)
+    bluetooth_read.run(bluetooth, q=q)
 
 
 def send_last_cart(BARCODE_FILEPATH, PRODUCT_FILEPATH, bluetooth):
@@ -52,9 +50,27 @@ def send_last_cart(BARCODE_FILEPATH, PRODUCT_FILEPATH, bluetooth):
             print(line)
             bluetooth.write(line + b'\n')
 
+def send_command(command, bluetooth):
+	bluetooth.write(command.encode('utf-8') + b'\n')
+
+def send_cart(cart, BARCODE_FILEPATH, PRODUCT_FILEPATH, PENDING_PATH, bluetooth):
+    print("Requested cart: {0}".format(cart))
+    if cart == 'last':
+        send_last_cart(BARCODE_FILEPATH, PRODUCT_FILEPATH, bluetooth);
+        os.unlink(PENDING_PATH)
+
+def terminate_proc(proc):
+    for p in proc:
+        p.terminate()
+
+def touch(fname, times=None):
+    with open(fname, 'a'):
+        os.utime(fname, times)
+
 if __name__ == '__main__':
     BARCODE_FILEPATH = 'barcodes.json'
     PRODUCT_FILEPATH = 'products.json'
+    PENDING_PATH = '.pending'
     
     bluetooth = serial.Serial(
         port='/dev/ttyAMA0',
@@ -66,22 +82,29 @@ if __name__ == '__main__':
     )
     
     while True:
-        if os.path.exists(BARCODE_FILEPATH):
-            os.remove(BARCODE_FILEPATH)
-        
-        if os.path.exists(PRODUCT_FILEPATH):
-            os.remove(PRODUCT_FILEPATH)
+        if not os.path.exists(PENDING_PATH):
+            touch(PENDING_PATH)
+            if os.path.exists(BARCODE_FILEPATH):
+                os.remove(BARCODE_FILEPATH)
+            
+            if os.path.exists(PRODUCT_FILEPATH):
+                os.remove(PRODUCT_FILEPATH)
         
         q = Queue(1)
         proc = runInParallel(q, bluetooth, run_voice, run_barcode, run_serial)
         
-        data = q.get()
-        
-        print(data)
-        if data != -1:
-            continue
-        
-        for p in proc:
-            p.terminate()
-
-        send_last_cart(BARCODE_FILEPATH, PRODUCT_FILEPATH, bluetooth);
+        while 1:
+            print("System Ready")
+            data = q.get()
+            
+            print(data)
+            if data == -1:
+                terminate_proc(proc)
+                send_command('get_last_cart', bluetooth)
+                break
+            elif "get" in data.split()[0]:
+                print("GET command received")
+                terminate_proc(proc)
+                cart = data.split()[1]
+                send_cart(cart, BARCODE_FILEPATH, PRODUCT_FILEPATH, PENDING_PATH, bluetooth)
+                break

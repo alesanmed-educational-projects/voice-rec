@@ -6,6 +6,7 @@ import re
 
 def run():
     sys.stdin = open(0)
+    print("Barcode Reader [OK]")
     while (True):
         filepath = 'barcodes.json'
 
