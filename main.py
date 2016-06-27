@@ -1,6 +1,7 @@
 import datetime
 from multiprocessing import Process, Queue
 import os
+import hashlib
 import json
 import tools.barcode as barcode
 import tools.record as record
@@ -46,9 +47,12 @@ def send_last_cart(BARCODE_FILEPATH, PRODUCT_FILEPATH, bluetooth):
         json.dump(result, file)
     
     with open('shopping_carts/cart-{0}.json'.format(timestamp), 'rb') as file:
-        for line in file.readlines():
-            print(line)
-            bluetooth.write(line + b'\n')
+        line = file.readlines()[0]
+        print(line)
+        bluetooth.write(line + b'\n')
+        checksum = hashlib.sha256(line).hexdigest()
+
+        return checksum
 
 def send_command(command, bluetooth):
 	bluetooth.write(command.encode('utf-8') + b'\n')
@@ -71,6 +75,8 @@ if __name__ == '__main__':
     BARCODE_FILEPATH = 'barcodes.json'
     PRODUCT_FILEPATH = 'products.json'
     PENDING_PATH = '.pending'
+    checksum_pending = False
+    cart_checksum = ""
     
     bluetooth = serial.Serial(
         port='/dev/ttyAMA0',
@@ -99,12 +105,23 @@ if __name__ == '__main__':
             
             print(data)
             if data == -1:
+                # Si se ha recibido un carrito y aun no se ha mandado el checksum de vuelta,
+                # no se hace nada
+                if checksum_pending:
+                    continue
                 terminate_proc(proc)
                 send_command('get_last_cart', bluetooth)
                 break
             elif "get" in data.split()[0]:
+                # Si se ha recibido un carrito y aun no se ha mandado el checksum de vuelta,
+                # no se hace nada
+                if checksum_pending:
+                    continue
                 print("GET command received")
                 terminate_proc(proc)
                 cart = data.split()[1]
-                send_cart(cart, BARCODE_FILEPATH, PRODUCT_FILEPATH, PENDING_PATH, bluetooth)
-                break
+                checksum = send_cart(cart, BARCODE_FILEPATH, PRODUCT_FILEPATH, PENDING_PATH, bluetooth)
+                print(checksum)
+                checksum_pending = True
+            elif "checksum" in data.split()[0]:
+                pass
